@@ -29,5 +29,9 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 
+benchmarks/
+**/bin/test/
+pgjdbc/bin/
+
 # Ignore folders used to build binaries for old Java
 /eclipsebin/

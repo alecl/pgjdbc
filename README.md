@@ -1,5 +1,26 @@
 <img height="90" alt="Slonik Duke" align="right" src="docs/media/img/slonik_duke.png" />
 
+# FORK CHANGES
+
+Simple POC to skip partitioned table listing through filtering metadata queries in this style:
+
+```
+NOT pgclass.relispartition
+pgclass.relispartition=false
+pgclass.relkind in ('r','p')
+```
+
+Incremented version to 42.5.3 to distinguish from original
+
+This driver was in turned used with Liquibase to extract a declarative set of files representing a database that happened to have >100,000 partitions.
+
+## Compile and Deploy to Liquibase folder
+
+```
+./gradlew clean build jar -x test
+cp pgjdbc/build/libs/postgresql-42.5.3-SNAPSHOT-all.jar ~/eclipse-workspace/liquibase/
+```
+
 # PostgreSQL JDBC Driver
 
 PostgreSQL JDBC Driver (PgJDBC for short) allows Java programs to connect to a PostgreSQL database using standard, database independent Java code. Is an open source JDBC driver written in Pure Java (Type 4), and communicates in the PostgreSQL native network protocol.

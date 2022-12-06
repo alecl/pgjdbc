@@ -1312,7 +1312,7 @@ public class PgDatabaseMetaData implements DatabaseMetaData {
              + "'' AS SELF_REFERENCING_COL_NAME, '' AS REF_GENERATION "
              + " FROM pg_catalog.pg_namespace n, pg_catalog.pg_class c "
              + " LEFT JOIN pg_catalog.pg_description d ON (c.oid = d.objoid AND d.objsubid = 0  and d.classoid = 'pg_class'::regclass) "
-             + " WHERE c.relnamespace = n.oid ";
+             + " WHERE c.relnamespace = n.oid AND c.relkind in ('r','p') and c.relispartition=false ";
 
     if (schemaPattern != null && !schemaPattern.isEmpty()) {
       select += " AND n.nspname LIKE " + escapeQuotes(schemaPattern);
@@ -1564,7 +1564,7 @@ public class PgDatabaseMetaData implements DatabaseMetaData {
            + " LEFT JOIN pg_catalog.pg_description dsc ON (c.oid=dsc.objoid AND a.attnum = dsc.objsubid) "
            + " LEFT JOIN pg_catalog.pg_class dc ON (dc.oid=dsc.classoid AND dc.relname='pg_class') "
            + " LEFT JOIN pg_catalog.pg_namespace dn ON (dc.relnamespace=dn.oid AND dn.nspname='pg_catalog') "
-           + " WHERE c.relkind in ('r','p','v','f','m') and a.attnum > 0 AND NOT a.attisdropped ";
+           + " WHERE c.relkind in ('r','p','v','f','m') and c.relispartition=false and a.attnum > 0 AND NOT a.attisdropped ";
 
     if (schemaPattern != null && !schemaPattern.isEmpty()) {
       sql += " AND n.nspname LIKE " + escapeQuotes(schemaPattern);
@@ -1816,7 +1816,7 @@ public class PgDatabaseMetaData implements DatabaseMetaData {
           + " FROM pg_catalog.pg_namespace n, pg_catalog.pg_class c, pg_catalog.pg_roles r "
           + " WHERE c.relnamespace = n.oid "
           + " AND c.relowner = r.oid "
-          + " AND c.relkind IN ('r','p','v','m','f') ";
+          + " AND c.relkind IN ('r','p','v','m','f') and c.relispartition=false ";
 
     if (schemaPattern != null && !schemaPattern.isEmpty()) {
       sql += " AND n.nspname LIKE " + escapeQuotes(schemaPattern);
@@ -2297,7 +2297,7 @@ public class PgDatabaseMetaData implements DatabaseMetaData {
       sql += ", pg_catalog.pg_depend dep ";
     }
     sql +=
-        " WHERE pkn.oid = pkc.relnamespace AND pkc.oid = pka.attrelid AND pka.attnum = con.confkey[pos.n] AND con.confrelid = pkc.oid "
+        " WHERE pkn.oid = pkc.relnamespace AND pkc.relispartition = false AND pkc.oid = pka.attrelid AND pka.attnum = con. confkey[pos.n] AND con.confrelid = pkc.oid "
             + " AND fkn.oid = fkc.relnamespace AND fkc.oid = fka.attrelid AND fka.attnum = con.conkey[pos.n] AND con.conrelid = fkc.oid "
             + " AND con.contype = 'f' ";
     /*
@@ -2523,7 +2523,7 @@ public class PgDatabaseMetaData implements DatabaseMetaData {
             + "  JOIN pg_catalog.pg_index i ON (ct.oid = i.indrelid) "
             + "  JOIN pg_catalog.pg_class ci ON (ci.oid = i.indexrelid) "
             + "  JOIN pg_catalog.pg_am am ON (ci.relam = am.oid) "
-            + "WHERE true ";
+            + "WHERE ct.relispartition=false ";
 
       if (schema != null && !schema.isEmpty()) {
         sql += " AND n.nspname = " + escapeQuotes(schema);
@@ -2598,7 +2598,7 @@ public class PgDatabaseMetaData implements DatabaseMetaData {
             + " ci.relpages AS PAGES, "
             + " pg_catalog.pg_get_expr(i.indpred, i.indrelid) AS FILTER_CONDITION "
             + from
-            + " WHERE ct.oid=i.indrelid AND ci.oid=i.indexrelid AND a.attrelid=ci.oid AND ci.relam=am.oid "
+            + " WHERE ct.relispartition=false AND ct.oid=i.indrelid AND ci.oid=i.indexrelid AND a.attrelid=ci.oid AND ci.relam=am.oid "
             + where;
 
       sql += " AND ct.relname = " + escapeQuotes(tableName);

@@ -203,7 +203,7 @@ public class PgResultSetMetaData implements ResultSetMetaData, PGResultSetMetaDa
       sql.append("pg_catalog.pg_get_expr(d.adbin, d.adrelid) LIKE '%nextval(%' ");
     }
     sql.append( "FROM pg_catalog.pg_class c "
-            + "JOIN pg_catalog.pg_namespace n ON (c.relnamespace = n.oid) "
+            + "JOIN pg_catalog.pg_namespace n ON (c.relispartition=false) AND (c.relnamespace = n.oid) "
             + "JOIN pg_catalog.pg_attribute a ON (c.oid = a.attrelid) "
             + "JOIN pg_catalog.pg_type t ON (a.atttypid = t.oid) "
             + "LEFT JOIN pg_catalog.pg_attrdef d ON (d.adrelid = a.attrelid AND d.adnum = a.attnum) "
